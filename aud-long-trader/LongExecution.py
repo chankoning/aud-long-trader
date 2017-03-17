@@ -16,6 +16,7 @@ import urllib.request
 #local imports
 from SendSMS import SMSService
 from Rule import DailyRule
+from Rule import WeeklyRule
 
 
 #######################
@@ -31,14 +32,15 @@ class LongExecution:
 
 	sms = SMSService()
 	dailyRule = DailyRule()
+	weeklyRule = WeeklyRule()
 
 	def execute(self):
 		opener = AppURLopener()
 		soup = BeautifulSoup(opener.open(self.url).read(), 'html5lib')
 		currTable = soup.find(id='curr_table')
 
-		self.currentSpot = self.parseLastPrice(soup)
-		print ('current trading price is:', self.currentSpot)
+		self.currentSpot = float(self.parseLastPrice(soup))
+		print ('current trading price is:', str(self.currentSpot))
 
 		if debug:
 			f = open('workfile', 'w')
@@ -48,14 +50,13 @@ class LongExecution:
 			self.writeCsv(dailyRecords, ["'date'", "'price'", "'open'", "'high'", "'low'", "'change'"])
 
 		dailyRecords = self.parseDailyPriceTable(currTable)
-		lastDailyClosePrice = dailyRecords[0][1]
-		lastDailyChange = dailyRecords[0][5]
 
-		print ('last close price is:', lastDailyClosePrice, lastDailyChange)
-
-		dailyMsg = self.dailyRule.execute(self.currentSpot, lastDailyClosePrice, lastDailyChange)
-		self.sms.send(dailyMsg)
+		weeklyMsg = self.weeklyRule.execute(self.currentSpot, dailyRecords)
+		self.sms.send(weeklyMsg)
 		
+		dailyMsg = self.dailyRule.execute(self.currentSpot, dailyRecords)
+		self.sms.send(dailyMsg)
+
 		print ('program ends')
 		
 	def writeCsv(self, records, headline):
