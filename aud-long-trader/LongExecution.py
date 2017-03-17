@@ -29,6 +29,7 @@ class AppURLopener(urllib.request.FancyURLopener):
 class LongExecution:
 	url = 'https://au.investing.com/currencies/aud-usd-historical-data'
 	currentSpot = None	
+	desc = 'AUD/USD'
 
 	sms = SMSService()
 	dailyRule = DailyRule()
@@ -51,10 +52,10 @@ class LongExecution:
 
 		dailyRecords = self.parseDailyPriceTable(currTable)
 
-		weeklyMsg = self.weeklyRule.execute(self.currentSpot, dailyRecords)
+		weeklyMsg = self.weeklyRule.execute(self.currentSpot, dailyRecords, self.desc)
 		self.sms.send(weeklyMsg)
 		
-		dailyMsg = self.dailyRule.execute(self.currentSpot, dailyRecords)
+		dailyMsg = self.dailyRule.execute(self.currentSpot, dailyRecords, self.desc)
 		self.sms.send(dailyMsg)
 
 		print ('program ends')

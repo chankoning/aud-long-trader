@@ -8,10 +8,12 @@ def percentDiff(current, last):
 class WeeklyRule:
 
 	# compare current price and last 3 week's close price
-	def execute(self, currentSpot, dailyRecords):
+	def execute(self, currentSpot, dailyRecords, desc):
 
 		now = str(datetime.datetime.now())
-		msg = now + '\n'
+
+		msg = desc + '\n'
+		msg += now + '\n'
 		msg += 'Weekly percentChanges: '
 		
 		weekDaysGap = [4, 9, 14, 19]
@@ -52,12 +54,13 @@ class WeeklyRule:
 
 class DailyRule:
 
-	def execute(self, currentSpot, dailyRecords):
+	def execute(self, currentSpot, dailyRecords, desc):
 		now = str(datetime.datetime.now())
 
 		lastDailyClosePrice = float(dailyRecords[0][1])
 
-		msg = now + '\n'
+		msg = desc + '\n'
+		msg += now + '\n'
 		msg += 'last close price is: ' + str(lastDailyClosePrice) + '\n'
 		msg += 'Daily percentChange: '
 
