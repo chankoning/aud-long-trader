@@ -20,7 +20,7 @@ from Rule import WeeklyRule
 
 
 #######################
-debug = False
+debug = True
 
 class AppURLopener(urllib.request.FancyURLopener):
 	version = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; it; rv:1.8.1.11) Gecko/20071127 Firefox/2.0.0.11'
@@ -43,14 +43,15 @@ class LongExecution:
 		self.currentSpot = float(self.parseLastPrice(soup))
 		print ('current trading price is:', str(self.currentSpot))
 
+		dailyRecords = self.parseDailyPriceTable(currTable)
+
 		if debug:
 			f = open('workfile', 'w')
-			f.write(str(table))
+			f.write(str(currTable))
 			f.close()
 
 			self.writeCsv(dailyRecords, ["'date'", "'price'", "'open'", "'high'", "'low'", "'change'"])
 
-		dailyRecords = self.parseDailyPriceTable(currTable)
 
 		weeklyMsg = self.weeklyRule.execute(self.currentSpot, dailyRecords, self.desc)
 		self.sms.send(weeklyMsg)
@@ -64,9 +65,12 @@ class LongExecution:
 		now = str(datetime.datetime.now())
 
 		with open("data/price_daily." + now + ".csv", "w", newline="") as f:
+			tempRecords = []
+			tempRecords.append(headline)
+			tempRecords.append(records)
+			
 			writer = csv.writer(f)
-			records.insert(0, headline)
-			writer.writerows(records)
+			writer.writerows(tempRecords)
 
 	def parseDailyPriceTable(self, currTable):
 		records = []

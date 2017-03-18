@@ -20,7 +20,7 @@ class WeeklyRule:
 
 		weeklyPrices = []
 		for i in weekDaysGap:
-			if (i > len(dailyRecords)):
+			if (i >= len(dailyRecords)):
 				weeklyPrices.append(float(dailyRecords[len(dailyRecords)-1][1]))
 			else:
 				weeklyPrices.append(float(dailyRecords[i][1]))
